@@ -86,25 +86,13 @@ func (deployer *KubernetesDeployer) Deploy(request *http.Request, endpoint *port
 
 	args := make([]string, 0)
 
-	if endpoint.Type != portainer.KubernetesLocalEnvironment {
-		url := endpoint.URL
-		switch endpoint.Type {
-		case portainer.AgentOnKubernetesEnvironment:
-			agentUrl, agentProxy, err := deployer.getAgentURL(endpoint)
-			if err != nil {
-				return "", errors.WithMessage(err, "failed generating endpoint URL")
-			}
-			url = agentUrl
-			defer agentProxy.Close()
-		case portainer.EdgeAgentOnKubernetesEnvironment:
-			edgeUrl, err := deployer.getEdgeUrl(endpoint)
-			if err != nil {
-				return "", errors.WithMessage(err, "failed generating endpoint URL")
-			}
-
-			url = edgeUrl
+	switch endpoint.Type {
+	case portainer.AgentOnKubernetesEnvironment, portainer.EdgeAgentOnKubernetesEnvironment:
+		url, proxy, err := deployer.getAgentURL(endpoint)
+		if err != nil {
+			return "", errors.WithMessage(err, "failed generating endpoint URL")
 		}
-
+		defer proxy.Close()
 		args = append(args, "--server", url)
 		args = append(args, "--insecure-skip-tls-verify")
 	}
@@ -152,15 +140,6 @@ func (deployer *KubernetesDeployer) ConvertCompose(data []byte) ([]byte, error) 
 	}
 
 	return output, nil
-}
-
-func (deployer *KubernetesDeployer) getEdgeUrl(endpoint *portainer.Endpoint) (string, error) {
-	tunnel, err := deployer.reverseTunnelService.GetActiveTunnel(endpoint)
-	if err != nil {
-		return "", errors.Wrap(err, "failed activating tunnel")
-	}
-
-	return fmt.Sprintf("http://127.0.0.1:%d/kubernetes", tunnel.Port), nil
 }
 
 func (deployer *KubernetesDeployer) getAgentURL(endpoint *portainer.Endpoint) (string, *factory.ProxyServer, error) {
