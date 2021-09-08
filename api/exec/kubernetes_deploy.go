@@ -86,8 +86,7 @@ func (deployer *KubernetesDeployer) Deploy(request *http.Request, endpoint *port
 
 	args := make([]string, 0)
 
-	switch endpoint.Type {
-	case portainer.AgentOnKubernetesEnvironment, portainer.EdgeAgentOnKubernetesEnvironment:
+	if endpoint.Type == portainer.AgentOnKubernetesEnvironment || endpoint.Type == portainer.EdgeAgentOnKubernetesEnvironment {
 		url, proxy, err := deployer.getAgentURL(endpoint)
 		if err != nil {
 			return "", errors.WithMessage(err, "failed generating endpoint URL")
