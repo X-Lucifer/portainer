@@ -2,11 +2,12 @@ package azure
 
 import (
 	"net/http"
+	"path"
 	"strconv"
 	"sync"
 	"time"
-	"path"
-	"github.com/portainer/portainer/api"
+
+	portainer "github.com/portainer/portainer/api"
 	"github.com/portainer/portainer/api/http/client"
 )
 

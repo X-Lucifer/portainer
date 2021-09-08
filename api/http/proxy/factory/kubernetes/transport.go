@@ -76,7 +76,6 @@ func (transport *baseTransport) proxyNamespacedRequest(request *http.Request, fu
 }
 
 func (transport *baseTransport) executeKubernetesRequest(request *http.Request) (*http.Response, error) {
-
 	resp, err := transport.httpTransport.RoundTrip(request)
 
 	if err == nil && resp.StatusCode == http.StatusMovedPermanently {
