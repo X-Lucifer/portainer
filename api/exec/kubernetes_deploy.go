@@ -91,6 +91,7 @@ func (deployer *KubernetesDeployer) Deploy(request *http.Request, endpoint *port
 		if err != nil {
 			return "", errors.WithMessage(err, "failed generating endpoint URL")
 		}
+
 		defer proxy.Close()
 		args = append(args, "--server", url)
 		args = append(args, "--insecure-skip-tls-verify")
